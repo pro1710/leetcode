@@ -1,0 +1,164 @@
+//31_next_permutation.cpp
+
+class Solution {
+public:
+    void nextPermutation(vector<int>& nums) {
+        int size = nums.size();
+        int left = size - 2;
+        while (left >= 0 && nums[left] >= nums[left+1]) {
+            --left;
+        }
+        int right = size - 1;
+        if (left >= 0) {
+            right = left + 1;
+            
+            while (right < size && nums[left] < nums[right]) {
+                ++right;
+            }
+            --right;
+            
+            nums[left] ^= nums[right] ^= nums[left] ^= nums[right];
+        }
+        
+        ++left;
+        right = size - 1;
+        for (; left < right; ++left, --right) {
+            nums[left] ^= nums[right] ^= nums[left] ^= nums[right];
+        }
+    }
+};
+
+
+//33_search_in_rotatted_array.cpp
+
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        // copy(nums.begin(), nums.end(), ostream_iterator<int>(cout, ", ")); cout << endl;
+        return binSearch(nums, 0, nums.size()-1, target);
+    }
+
+private:
+    int binSearch(vector<int>& nums, const int& left, const int& right, const int& target) {
+
+        // cout << "binSearch: left = " << left << ", right = " << right << ", target = " << target << endl; 
+        
+        if (left > right) {
+            // cout << "left > right" << endl; 
+            return -1;
+        }
+        
+        if (right - left == 0) {
+            // cout << "right - left == 0: nums[left] = " << nums[left] << ", nums[right] = " << nums[right] << endl;
+            return nums[left] == target ? left : -1;
+        }
+        
+        int mid  = (right + left)/2;
+        
+        int right_part = -1;
+
+        if (nums[left] > nums[right]) {
+            if (-1 != (right_part = binSearch(nums, mid+1, right, target))) {
+                return right_part;
+            }
+            return binSearch(nums, left, mid, target);
+        } 
+        
+        if (target > nums[mid]) {
+            return binSearch(nums, mid+1, right, target);
+        }        
+        
+        return binSearch(nums, left, mid, target);
+        
+    }
+    
+};
+
+
+//35_search_insert_position.cpp
+
+class Solution {
+public:
+    int searchInsert(vector<int>& nums, int target) {
+        return binSearch(nums, 0, nums.size()-1, target); 
+    }
+    
+private:
+    int binSearch(vector<int>& nums, int left, int right, const int& target) {
+        
+        // cout << "[" << left << ", " << right << "]\n";
+        // cout << nums[left] << ", " << nums[right] << " = " << target << endl;
+        
+        if (left == right) {
+            if (target > nums[left]) {
+                return left+1;
+            } else {
+                return left;
+            }
+        }
+        
+        int mid = (left + right) / 2;
+        // cout << "nums[" << mid << "] = " << nums[mid] <<  endl;
+        
+        if (target > nums[mid]) {
+            return binSearch(nums, mid+1, right, target);
+        } else {
+            return binSearch(nums, left, mid, target);
+        }
+        
+    }
+};
+
+
+//403_frog_jump.cpp
+
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+
+static const auto ___ = []()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    return nullptr;
+}();
+
+class Solution {
+public:
+    bool canCross(vector<int>& stones) {
+        int last_stone = stones[stones.size()-1];
+        if (stones.size()*(stones.size() -1) / 2 < last_stone)
+            return false;
+        
+        std::vector<int> direction = {1, 0, -1};        
+
+        std::unordered_map<int, std::unordered_set<int>> river_map;
+        for (const auto& stone: stones) {
+            river_map.insert({stone, {}});
+        }
+        
+        river_map[stones[0]].insert(0);
+        
+       for (const auto& stone: stones) {
+           for (const auto& unit: river_map[stone]) {
+               for (const auto& dir: direction) {
+                   int next_stone = stone + unit + dir;
+               
+                   if (next_stone <= stone) {
+                       continue;
+                   }
+                   
+                   if (next_stone == last_stone) {
+                       return true;
+                   }
+                   
+                   if (river_map.count(next_stone) > 0) {
+                       river_map[next_stone].insert(unit+dir);
+                   }
+               }
+           }
+       }
+        return false;
+        
+    }
+};
