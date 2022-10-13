@@ -1,13 +1,13 @@
 class Solution {
 public:
     int numSquares(int n) {
-        int res = n, num =2;
-        while(num * num <=n){
-            int x = n/(num*num), y = n%(num*num);
-            res = min(res, x + numSquares(y));
-            ++num;
+        vector<int> dp(n+1, n+1);
+        dp[0] = 0;
+        for (int i = 1; i < dp.size(); ++i) {
+            for (int j = 1, sn = sqrt(n); j <= sn; ++j) {
+                dp[i] = min(dp[i], dp[i%(j*j)] + i/(j*j));
+            }
         }
-
-        return res;
+        return dp[n];
     }
 };
