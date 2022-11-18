@@ -14,6 +14,6 @@ public:
         for (int i = 1; i < next.size()-1; ++i) {
             next[i] = prev[i-1] + prev[i];
         }
-        return move(next);
+        return next;
     }
 };
